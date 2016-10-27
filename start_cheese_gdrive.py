@@ -41,9 +41,9 @@ def FolderHashRead():
     return hash
 
 def FolderHashWrite(hash):
-    f = open('data/hash.txt')
+    f = open('data/hash.txt','w')
     for key in hash:
-        f.write(key+':'+hash[key])
+        f.write(key+':'+hash[key]+'\n')
 
 
 def Main():
@@ -54,6 +54,4 @@ def Main():
         UploadOneFile(drive, file_title, path_from, hash)
 
 #Main()
-hash["333g"]="1122"
-hash['efsgdd']='advdfdhfg'
-FolderHashWrite(hash)
+hash=FolderHashRead()
