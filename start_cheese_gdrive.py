@@ -32,6 +32,7 @@ def FindGDriveFolderID(gdrive, local_file_path, hash, first):
     new_folder_google = gdrive.CreateFile({'name': drive_folder_name, 'title': drive_folder_name, 'mimeType': 'application/vnd.google-apps.folder', "parents": [{"id": "0B0o5FIq3lVzcR3ozSjc4cW44VXc"}]})
     new_folder_google.Upload()
     print 'create success ' + new_folder_google['id']
+    hash = FolderHashRead(gdrive)
     return FindGDriveFolderID(gdrive, local_file_path, hash, 0)
 
 
