@@ -53,7 +53,7 @@ def UploadOneFile(drive, file_title, file_path, hash):
         if gdive_folder_id == '':
             logging.info('GFolder not found')
             return hash
-        file_google = drive.CreateFile({'title': file_title, "parents":  [{"id": gdive_folder_id}]})
+        file_google = drive.CreateFile({'title': file_title,"mimeType":"application/vnd.google-apps.photo", "parents":  [{"id": gdive_folder_id}]})
         file_google.SetContentFile(local_file_path)
         file_google.Upload()
         os.remove(local_file_path)
