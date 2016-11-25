@@ -121,7 +121,7 @@ def Main():
     hash = {}
     path_from = "/home/cheese/Camera"
     file_list = [f for f in os.listdir(path_from) if os.path.isfile(os.path.join(path_from, f)) and f.endswith('.jpg')]
-    for file_title in sorted(file_list):
+    for file_title in sorted(file_list, reverse=True):
         hash = UploadOneFile(drive, file_title, path_from, hash)
         if hash == None:
             logging.info("KeyboardInterrupt: Main")
