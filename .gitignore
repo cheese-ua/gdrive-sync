@@ -1,4 +1,5 @@
 client_secrets.json
 service_acc.json
-data/google.obj
 log/
+.idea/
+data/
