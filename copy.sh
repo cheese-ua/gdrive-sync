@@ -1,1 +1,1 @@
-cp /home/cheese/Development/cheese-gdrive/start_cheese_gdrive.py /home/cheese/Development/Scripts/
+cp /home/cheese/Development/cheese-gdrive/start_sync.py /home/cheese/Development/Scripts/

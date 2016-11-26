@@ -4,6 +4,7 @@ import sys
 import time
 from pydrive.auth import GoogleAuth
 from pydrive.drive import GoogleDrive
+import random
 
 
 def AuthGDrive():
@@ -79,14 +80,19 @@ def FindGDriveFolderID(gdrive, local_file_path, hash):
 
 def UploadOneFile(drive, file_title, file_path, hash):
     try:
-        logging.info('')
         logging.info("Start upload: " + file_title)
         local_file_path = os.path.join(file_path, file_title)
+        if not os.path.exists(local_file_path):
+            logging.info("File not exist: "+local_file_path)
+            return hash
         res = FindGDriveFolderID(drive, local_file_path, hash)
         gdive_folder_id = res[0]
         hash = res[1]
         if gdive_folder_id == '':
             logging.info('GFolder not found')
+            return hash
+        if not os.path.exists(local_file_path):
+            logging.info("File not exist: "+local_file_path)
             return hash
         file_google = drive.CreateFile({'title': file_title, "parents":  [{"id": gdive_folder_id}]})
         file_google.SetContentFile(local_file_path)
@@ -95,10 +101,10 @@ def UploadOneFile(drive, file_title, file_path, hash):
         logging.info('Upload ok %s => %s ' ,file_title, file_google['id'])
         return hash
     except KeyboardInterrupt:
-        logging.info("KeyboardInterrupt: "+ UploadOneFile)
+        logging.info("KeyboardInterrupt: UploadOneFile")
         return None
-    except OSError:
-        logging.info("OSError: "+ OSError.message)
+    except OSError as err:
+        logging.info("OSError: "+ str(err))
         return hash
     except:
         logging.info("Unexpected error: " + str(sys.exc_info()[0]))
@@ -110,22 +116,44 @@ def FolderHashWrite(hash):
         f.write(key + ':' + hash[key] + '\n')
 
 def InitLog():
-    logging.basicConfig(format='%(asctime)s %(message)s', filename='log/cheese-gdrive.log',level=logging.DEBUG)
+    logging.basicConfig(format='%(asctime)s %(message)s', filename='log/gdrive-logger.log',level=logging.DEBUG)
     stderrLogger=logging.StreamHandler()
     stderrLogger.setFormatter(logging.Formatter('%(asctime)s %(message)s'))
     logging.getLogger().addHandler(stderrLogger)
 
 def Main():
     InitLog()
-    drive = AuthGDrive()
-    hash = {}
-    path_from = "/home/cheese/Camera"
-    file_list = [f for f in os.listdir(path_from) if os.path.isfile(os.path.join(path_from, f)) and f.endswith('.jpg')]
-    for file_title in sorted(file_list):
-        hash = UploadOneFile(drive, file_title, path_from, hash)
-        if hash == None:
+    while 1==1:
+        if OneCycle()==0:
             logging.info("KeyboardInterrupt: Main")
-            break
+            return
+        logging.info("wait minute")
+        time.sleep(60)
+
+def OneCycle():
+    try:
+        drive = AuthGDrive()
+        hash = {}
+        path_from = "/home/hikvision/Camera"
+        file_list = [f for f in os.listdir(path_from) if os.path.isfile(os.path.join(path_from, f)) and f.endswith('.jpg')]
+        file_list = sorted(file_list,reverse=True)
+        if len(sys.argv)>1 and (sys.argv[1]=='random' or sys.argv[1]=='rnd'):
+            logging.info('Random sort')
+            random.shuffle(file_list)
+        size = len(file_list)
+        idx=0
+        for file_title in file_list:
+            idx+=1
+            logging.info('')
+            logging.info("Files "+str(idx)+"/"+str(size)+" - " + str(idx*100/size)+"%")
+            hash = UploadOneFile(drive, file_title, path_from, hash)
+            if hash == None:
+                logging.info("KeyboardInterrupt: OneCycle")
+                return 0
+        return 1
+    except:
+        logging.info("Unexpected error: " + str(sys.exc_info()[0]))
+        return 1
 
 
 Main()
