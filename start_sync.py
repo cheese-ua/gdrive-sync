@@ -123,17 +123,17 @@ def InitLog():
 
 def Main():
     InitLog()
+    drive = AuthGDrive()
+    hash = {}
     while 1==1:
-        if OneCycle()==0:
+        if OneCycle(drive, hash)==0:
             logging.info("KeyboardInterrupt: Main")
             return
         logging.info("wait minute")
         time.sleep(60)
 
-def OneCycle():
+def OneCycle(drive, hash):
     try:
-        drive = AuthGDrive()
-        hash = {}
         path_from = "/home/hikvision/Camera"
         file_list = [f for f in os.listdir(path_from) if os.path.isfile(os.path.join(path_from, f)) and f.endswith('.jpg')]
         file_list = sorted(file_list,reverse=True)
