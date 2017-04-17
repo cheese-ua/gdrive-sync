@@ -126,16 +126,22 @@ def Main():
     drive = AuthGDrive()
     hash = {}
     while 1==1:
-        if OneCycle(drive, hash)==0:
+        res=OneCycle(drive, hash)
+        if res==0:
             logging.info("KeyboardInterrupt: Main")
             return
-        logging.info("wait minute")
-        time.sleep(60)
+        if res==2:
+            logging.info("wait minute")
+            time.sleep(60)
 
 def OneCycle(drive, hash):
     try:
         path_from = "/home/hikvision/Camera"
         file_list = [f for f in os.listdir(path_from) if os.path.isfile(os.path.join(path_from, f)) and f.endswith('.jpg')]
+        logging.info('Files count: '+str(len(file_list)))
+        if(len(file_list)==0):
+            logging.info('No files')
+            return 2
         file_list = sorted(file_list,reverse=True)
         if len(sys.argv)>1 and (sys.argv[1]=='random' or sys.argv[1]=='rnd'):
             logging.info('Random sort')
